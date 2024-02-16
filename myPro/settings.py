@@ -141,3 +141,36 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+
+
+
+
+
+
+
+
+# _____________________EMAIL SENDING SETTINGS Starts______________________
+# SMTP Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Replace 'smtp.example.com' with your SMTP server address
+EMAIL_PORT = 587  # Replace with your SMTP port (usually 587 for TLS/STARTTLS or 465 for SSL)
+EMAIL_USE_TLS = True  # Whether to use TLS/STARTTLS for secure communication
+EMAIL_HOST_USER = 'techtorch@gmail.com'  # Replace with your email address
+EMAIL_HOST_PASSWORD = '4@'  # Replace with your email password
+DEFAULT_FROM_EMAIL = 'techtorch@gmail.com'  # Default sender email address
+
+# Optional: Email Timeout Setting (in seconds)
+EMAIL_TIMEOUT = None  # None means use the default timeout set by the underlying email backend
+
+# Optional: Email Subject Prefix (prepended to the subject line of outgoing emails)
+EMAIL_SUBJECT_PREFIX = '[CropShield] '
+
+# Optional: Email SSL/TLS Certificate Settings (for SSL/TLS connections)
+EMAIL_USE_SSL = False  # Set to True if your SMTP server requires SSL connection
+EMAIL_SSL_CERTFILE = None  # Path to the SSL certificate file (if required)
+EMAIL_SSL_KEYFILE = None  # Path to the SSL key file (if required)
+
+# Optional: Email Authentication Mechanism Settings
+EMAIL_USE_LOCALTIME = False  # Set to True to send emails using local time (default is UTC)
+
+# _____________________EMAIL SENDING SETTINGS Ends______________________

@@ -1,5 +1,11 @@
 from rest_framework import serializers
-
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from rest_framework import serializers
 # from django.contrib.auth.models import User
 from .models import CustomUser as User
 
@@ -26,3 +32,33 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def send_verification_email(self, user):
+        current_site = get_current_site(self.context['request'])
+        mail_subject = 'Activate your account'
+        message = render_to_string('registration/verification_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': default_token_generator.make_token(user),
+        })
+        to_email = self.validated_data['email']
+        email = EmailMessage(
+            mail_subject, message, to=[to_email]
+        )
+        email.send()
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+
+    def save(self, **kwargs):
+        email = self.validated_data['email']
+        user = User.objects.get(email=email)
+        self.send_verification_email(user)

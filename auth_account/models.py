@@ -29,6 +29,11 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
 
+    # Additional fields for user profile
+    bio = models.TextField(blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    # Add more profile fields as needed
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
