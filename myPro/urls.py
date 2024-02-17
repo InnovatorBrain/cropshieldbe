@@ -13,12 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 
+"""
+   Admin Interface
+"""
+admin.site.site_header = "CropShield Admin"
+admin.site.index_title = "CropShield Site Administration"
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
-    path('api-auth/', include('rest_framework.urls')),
-    path('auth/', include('auth_account.urls'))
+    path("api-auth/", include("rest_framework.urls")),
+    path("auth/", include("auth_account.urls")),
 ]

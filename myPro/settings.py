@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,6 +31,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -38,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",
     "core",
     "auth_account",
     "insurance",
@@ -48,6 +52,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -62,12 +67,21 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:9000",
+]
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
+    ],
 }
 
 AUTH_USER_MODEL = "auth_account.CustomUser"
@@ -143,27 +157,27 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 
-
-
-
-
-
-
 # _____________________EMAIL SENDING SETTINGS Starts______________________
 # SMTP Email Settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Replace 'smtp.example.com' with your SMTP server address
-EMAIL_PORT = 587  # Replace with your SMTP port (usually 587 for TLS/STARTTLS or 465 for SSL)
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = (
+    "smtp.gmail.com"  # Replace 'smtp.example.com' with your SMTP server address
+)
+EMAIL_PORT = (
+    587  # Replace with your SMTP port (usually 587 for TLS/STARTTLS or 465 for SSL)
+)
 EMAIL_USE_TLS = True  # Whether to use TLS/STARTTLS for secure communication
-EMAIL_HOST_USER = 'techtorch@gmail.com'  # Replace with your email address
-EMAIL_HOST_PASSWORD = '4@'  # Replace with your email password
-DEFAULT_FROM_EMAIL = 'techtorch@gmail.com'  # Default sender email address
+EMAIL_HOST_USER = "techtorch@gmail.com"  # Replace with your email address
+EMAIL_HOST_PASSWORD = "4@"  # Replace with your email password
+DEFAULT_FROM_EMAIL = "techtorch@gmail.com"  # Default sender email address
 
 # Optional: Email Timeout Setting (in seconds)
-EMAIL_TIMEOUT = None  # None means use the default timeout set by the underlying email backend
+EMAIL_TIMEOUT = (
+    None  # None means use the default timeout set by the underlying email backend
+)
 
 # Optional: Email Subject Prefix (prepended to the subject line of outgoing emails)
-EMAIL_SUBJECT_PREFIX = '[CropShield] '
+EMAIL_SUBJECT_PREFIX = "[CropShield] "
 
 # Optional: Email SSL/TLS Certificate Settings (for SSL/TLS connections)
 EMAIL_USE_SSL = False  # Set to True if your SMTP server requires SSL connection
@@ -171,6 +185,16 @@ EMAIL_SSL_CERTFILE = None  # Path to the SSL certificate file (if required)
 EMAIL_SSL_KEYFILE = None  # Path to the SSL key file (if required)
 
 # Optional: Email Authentication Mechanism Settings
-EMAIL_USE_LOCALTIME = False  # Set to True to send emails using local time (default is UTC)
+EMAIL_USE_LOCALTIME = (
+    False  # Set to True to send emails using local time (default is UTC)
+)
 
 # _____________________EMAIL SENDING SETTINGS Ends______________________
+# _____________________JWT SETTINGS Starts______________________
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+}
