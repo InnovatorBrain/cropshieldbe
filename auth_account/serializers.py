@@ -62,3 +62,19 @@ class EmailVerificationSerializer(serializers.Serializer):
         email = self.validated_data['email']
         user = User.objects.get(email=email)
         self.send_verification_email(user)
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username', 'is_active']
+        read_only_fields = ['is_active', 'is_staff', 'is_superuser']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'read_only': True},
+        }
+
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            password = validated_data.pop('password')
+            instance.set_password(password)
+        return super().update(instance, validated_data)
