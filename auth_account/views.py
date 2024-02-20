@@ -1,14 +1,15 @@
+from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth import authenticate
-from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer
+from .models import CustomUser as User
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+
+from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer
 """
 Generate Token Manually
 """
@@ -68,6 +69,10 @@ class CustomPasswordResetView(APIView):
     
 class SendPasswordResetEmailView(APIView):
     permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        # Return an empty queryset
+        return User.objects.none()
+    
     
     def post(self, request, format=None):
         serializer = SendPasswordResetEmailSerializer(data=request.data, context={'request': request})
@@ -79,8 +84,9 @@ class SendPasswordResetEmailView(APIView):
 class UserPasswordResetView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, uidb64, token, format=None):
-        serializer = CustomPasswordResetSerializer(data = request.data, context={'uidb64':uidb64, 'token':token})
+        serializer = UserPasswordResetSerializer(data = request.data, context={'uidb64':uidb64, 'token':token})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({"message":"Password reset successfully"}, status=status.HTTP_200_OK)
         return Response({"error":"Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
+    

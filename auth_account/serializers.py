@@ -1,10 +1,10 @@
-from rest_framework import serializers
+from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from rest_framework import serializers
 from rest_framework import serializers
 from .models import CustomUser as User
 from .utils import Util 
@@ -110,6 +110,7 @@ class CustomPasswordResetSerializer(serializers.Serializer):
 
 class SendPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, required=True)
+    
     class Meta:
         fields = ['email']
     
@@ -121,25 +122,26 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             token = default_token_generator.make_token(user)
             link = "http://localhost:3000/api/user/reset/" + uid + "/" + token 
             print(f"Password Reset Link: {link}")
-            body = "Click following link to reset your password: " + link 
+            body = "Click the following link to reset your password: " + link 
             current_site = get_current_site(self.context['request'])
-            mail_subject = 'Password Reset Request'
-            message = render_to_string('registration/password_reset_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            to_email = email
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
-            email.send()
+            mail_subject = 'Password Reset Request'  # Define the email subject here
+            data = {
+                'email_subject': mail_subject,  # Include 'email_subject' key
+                'email_body': body,
+                'to_email': user.email
+            }
+            Util.send_email(data)
             return attrs
         else:
             raise serializers.ValidationError("User with this email does not exist.")
+        
+    def create(self, validated_data):
+        """
+        Implement the create method to handle object creation.
+        In this case, since we're just sending an email, we don't need to create any objects.
+        """
+        return {} # Return None as we're not creating any objects
 
-# After Email Sent
 class UserPasswordResetSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, style={'input_type': 'password'}, write_only=True)
     confirm_password = serializers.CharField(max_length=128, style={'input_type': 'password'}, write_only=True)
