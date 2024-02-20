@@ -2,11 +2,14 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from rest_framework import serializers
 from rest_framework import serializers
 from .models import CustomUser as User
+from django.utils.encoding import force_str
+from rest_framework.exceptions import ValidationError
 from .utils import Util 
 
 # Email import
@@ -120,7 +123,8 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            link = "http://localhost:3000/api/user/reset/" + uid + "/" + token 
+            # link = "http://localhost:3000/api/user/reset/" + uid + "/" + token 
+            link = "http://127.0.0.1:8000/auth/reset-password-Email/" + uid + "/" + token
             print(f"Password Reset Link: {link}")
             body = "Click the following link to reset your password: " + link 
             current_site = get_current_site(self.context['request'])
@@ -143,33 +147,29 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
         return {} # Return None as we're not creating any objects
 
 class UserPasswordResetSerializer(serializers.Serializer):
-    password = serializers.CharField(max_length=128, style={'input_type': 'password'}, write_only=True)
-    confirm_password = serializers.CharField(max_length=128, style={'input_type': 'password'}, write_only=True)
+  password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
+  confirm_password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
+  class Meta:
+    fields = ['password', 'confirm_password']
 
-    class Meta:
-        fields = ['password', 'confirm_password']
-
-    def create(self, validated_data):
-        user = self.context['user']
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
-
-    def validate(self, attrs):
-        try:
-            password = attrs.get('password')
-            confirm_password = attrs.get('confirm_password')
-            uid = self.context.get('uid')
-            token = self.context.get('token')
-            if password != confirm_password:
-                raise serializers.ValidationError("Passwords do not match")
-            id = smart_str(urlsafe_base64_decode(uid))
-            user = User.objects.get(pk=id)
-            if not PasswordResetTokenGenerator().check_token(user, token):           
-                raise serializers.ValidationError("Invalid token")
-            user.set_password(password)
-            user.save()
-            return attrs
-        except DjangoUnicodeDecodeError as identifier:
-            PasswordResetTokenGenerator().check_token(user, token)
-            raise serializers.ValidationError("Invalid token")
+  def validate(self, attrs):
+    try:
+      password = attrs.get('password')
+      confirm_password = attrs.get('confirm_password')
+      uid = self.context.get('uid')
+      token = self.context.get('token')
+      if password != confirm_password:
+        raise serializers.ValidationError("Password and Confirm Password doesn't match")
+      id = smart_str(urlsafe_base64_decode(uid))
+      user = User.objects.get(id=id)
+      if not PasswordResetTokenGenerator().check_token(user, token):
+        raise serializers.ValidationError('Password Reset Successfully')
+      user.set_password(password)
+      user.save()
+      return attrs
+    except DjangoUnicodeDecodeError as identifier:
+      PasswordResetTokenGenerator().check_token(user, token)
+      raise serializers.ValidationError('Token is not Valid or Expired')
+    
+  def create(self, validated_data):
+        return {}
