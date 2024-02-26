@@ -123,14 +123,20 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            # link = "http://localhost:3000/api/user/reset/" + uid + "/" + token 
-            link = "http://127.0.0.1:8000/auth/reset-password-Email/" + uid + "/" + token
+            link = f"http://127.0.0.1:8000/auth/reset-password-Email/{uid}/{token}"
             print(f"Password Reset Link: {link}")
-            body = "Click the following link to reset your password: " + link 
-            current_site = get_current_site(self.context['request'])
-            mail_subject = 'Password Reset Request'  # Define the email subject here
+            
+            # Formatting the email body
+            recipient_name = user.first_name
+            recipient_username = user.username
+            sender_name = "CropShield Support"
+            sender_position = ""
+            sender_contact = "support@cropshield.com"
+            body = self.format_body(recipient_name, recipient_username, link, sender_name, sender_position, sender_contact)
+
+            mail_subject = 'Password Reset Request'
             data = {
-                'email_subject': mail_subject,  # Include 'email_subject' key
+                'email_subject': mail_subject,
                 'email_body': body,
                 'to_email': user.email
             }
@@ -140,11 +146,26 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             raise serializers.ValidationError("User with this email does not exist.")
         
     def create(self, validated_data):
-        """
-        Implement the create method to handle object creation.
-        In this case, since we're just sending an email, we don't need to create any objects.
-        """
-        return {} # Return None as we're not creating any objects
+        return {}
+        
+    def format_body(self, recipient_name, recipient_username, link, sender_name, sender_position, sender_contact):
+        body = f"""
+🌾 AI and Blockchain-Based Crop Insurance 🌱 
+
+Dear {recipient_name},
+
+We hope this message finds you well. At CropShield we are committed to protecting your personal information.                    
+
+You have recently initiated a password reset request for your account {recipient_username} on our innovative platform, the "AI and Blockchain-Based Crop Insurance System." To proceed, please follow the link provided below:
+
+{link}
+If you have any questions or require further assistance, feel free to contact us at support@shutterstock.com. Your satisfaction is our top priority.
+
+Warm regards,
+{sender_name}
+{sender_position}
+"""
+        return body
 
 class UserPasswordResetSerializer(serializers.Serializer):
   password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
