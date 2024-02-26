@@ -159,7 +159,7 @@ We hope this message finds you well. At CropShield we are committed to protectin
 You have recently initiated a password reset request for your account {recipient_username} on our innovative platform, the "AI and Blockchain-Based Crop Insurance System." To proceed, please follow the link provided below:
 
 {link}
-If you have any questions or require further assistance, feel free to contact us at support@shutterstock.com. Your satisfaction is our top priority.
+If you have any questions or require further assistance, feel free to contact us at support@cropshield.com. Your satisfaction is our top priority.
 
 Warm regards,
 {sender_name}

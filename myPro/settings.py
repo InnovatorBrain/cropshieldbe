@@ -165,8 +165,8 @@ USE_TZ = True
 # SMTP server settings
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587    #465  
-EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")   
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER_IS")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD_ISS")   
 # DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM") 
 EMAIL_USE_TLS = True
 
