@@ -68,8 +68,9 @@ class CustomPasswordResetView(APIView):
             return Response({"message":"Password reset successfully"}, status=status.HTTP_200_OK)
         return Response({"error":"Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
     
+# Apply on here after it isAuthenticatted 
 class SendPasswordResetEmailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         serializer = SendPasswordResetEmailSerializer(data=request.data, context={'request': request})
@@ -83,7 +84,7 @@ class UserPasswordResetView(APIView):
     def post(self, request, uidb64, token, format=None):
         serializer = UserPasswordResetSerializer(data=request.data, context={'uid': uidb64, 'token': token})
         if serializer.is_valid():
-            user = serializer.save()
-            return Response({"message": "Password reset successfully", "user_id": user.id}, status=status.HTTP_200_OK)
+            serializer.save()
+            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
