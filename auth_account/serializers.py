@@ -131,7 +131,7 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             recipient_username = user.username
             sender_name = "CropShield Support"
             sender_position = ""
-            sender_contact = "support@cropshield.com"
+            sender_contact = "cropshields@gmail.com"
             body = self.format_body(recipient_name, recipient_username, link, sender_name, sender_position, sender_contact)
 
             mail_subject = 'Password Reset Request'
@@ -159,7 +159,7 @@ We hope this message finds you well. At CropShield we are committed to protectin
 You have recently initiated a password reset request for your account {recipient_username} on our innovative platform, the "AI and Blockchain-Based Crop Insurance System." To proceed, please follow the link provided below:
 
 {link}
-If you have any questions or require further assistance, feel free to contact us at support@cropshield.com. Your satisfaction is our top priority.
+If you have any questions or require further assistance, feel free to contact us at cropshields@gmail.com. Your satisfaction is our top priority.
 
 Warm regards,
 {sender_name}
