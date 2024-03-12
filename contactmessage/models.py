@@ -24,4 +24,3 @@ class AdminReply(models.Model):
             return f"Reply to: {self.message.name} ({self.message.email})"
         except ObjectDoesNotExist:
             return "Reply to: Unknown"
-

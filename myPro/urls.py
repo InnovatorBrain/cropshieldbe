@@ -29,5 +29,4 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("auth/", include("auth_account.urls")),
     path("contactmessage/", include("contactmessage.urls")),
-
 ]

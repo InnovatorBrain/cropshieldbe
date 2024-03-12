@@ -9,6 +9,7 @@ class AdminReplyInline(admin.TabularInline):
     model = AdminReply
     extra = 0
     fields = ["reply_content"]
+    list_display = ["get_message_name", "reply_content", "get_user_message", "timestamp"]
 
     def get_formset(self, request, obj=None, **kwargs):
         """
@@ -18,6 +19,10 @@ class AdminReplyInline(admin.TabularInline):
         if obj:
             formset.form.base_fields["reply_content"].initial = "Default reply message"
         return formset
+    
+    def get_user_message(self, obj):
+        return obj.message.message
+    get_user_message.short_description = "User Message"
 
 
 @admin.register(ContactMessage)
@@ -38,11 +43,15 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(AdminReply)
 class AdminReplyAdmin(admin.ModelAdmin):
-    list_display = ["get_message_name", "reply_content", "timestamp"]
+    list_display = ["get_message_name", "reply_content", "get_user_message", "timestamp"]
     search_fields = ["message__name", "message__email", "reply_content"]
 
     def get_message_name(self, obj):
         return obj.message.name
+
+    def get_user_message(self, obj):
+        return obj.message.message
+    get_user_message.short_description = "User Message"
 
     get_message_name.short_description = "Message Name"
 
@@ -53,14 +62,28 @@ class AdminReplyAdmin(admin.ModelAdmin):
         Override save_model to send an email to the user's specific email address.
         """
         super().save_model(request, obj, form, change)
-
-        # Compose the email message
         subject = "Your message has been replied"
-        message = f"Your message:\n{obj.message.message}\n\nAdmin's reply:\n{obj.reply_content}"
+        # message = f"Your message:\n{obj.message.message}\n\nAdmin's reply:\n{obj.reply_content}"
+        message = f"""
+Dear {obj.message.name},
+
+We sincerely appreciate you reaching out to us.
+
+Your Message:
+{obj.message.message}
+
+Admin's Reply:
+{obj.reply_content}
+
+If you have any further questions or concerns, please feel free to contact us again.
+
+Warm regards,
+
+Cropshields support
+"""
+
         from_email = settings.EMAIL_HOST_USER
-        recipient_list = [
-            obj.message.email
-        ]  
+        recipient_list = [obj.message.email]
         try:
             send_mail(subject, message, from_email, recipient_list)
             self.message_user(request, "Email sent successfully.")
