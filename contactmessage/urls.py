@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import ContactMessageView
+from .views import ContactMessageListCreateAPIView, AdminReplyCreateAPIView
 
 urlpatterns = [
-    path("", ContactMessageView.as_view(), name='contact'),
+    path('', ContactMessageListCreateAPIView.as_view(), name='contact_message_list_create'),
+    path('reply/', AdminReplyCreateAPIView.as_view(), name='admin_reply_create'),
 ]
