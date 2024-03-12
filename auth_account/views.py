@@ -9,7 +9,7 @@ from .models import CustomUser as User
 from rest_framework.permissions import AllowAny
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-
+from django.contrib.auth import authenticate
 from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer
 """
 Generate Token Manually
@@ -50,6 +50,13 @@ class UserLoginView(APIView):
         return Response(
             {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
         )
+
+    def get(self, request):
+        # This view will be accessible only to authenticated users
+        if request.user.is_authenticated:
+            return Response({"message": "You are authenticated!"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]

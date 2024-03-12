@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "claims",
     "security",
     "payment",
+    "contactmessage",
 ]
 
 MIDDLEWARE = [
