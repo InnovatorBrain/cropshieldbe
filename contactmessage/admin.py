@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import ContactMessage, AdminReply
+from .filters import ContactMessageFilter
 
 
 class AdminReplyInline(admin.TabularInline):
@@ -21,26 +22,31 @@ class AdminReplyInline(admin.TabularInline):
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
+    actions = ["message"]
     list_display = ["name", "email", "message", "timestamp"]
+    list_per_page = 10
     search_fields = ["name", "email", "message"]
-    inlines = [AdminReplyInline]
     readonly_fields = ["name", "email", "message", "timestamp"]
+    list_filter = [ContactMessageFilter]
+    inlines = [AdminReplyInline]
 
-    def save_related(self, request, form, formsets, change):
-        """
-        Override save_related to prevent marking ContactMessage as changed when only AdminReply objects are added/modified.
-        """
-        super().save_related(request, form, formsets, change)
-        if not change:
-            form.instance._change_message = "Added."
-            form.instance.save(update_fields=["_change_message"])
+    def adminmessage(self, request, queryset):
+        pass
+
+    adminmessage.short_description = "Admin Message"
 
 
 @admin.register(AdminReply)
 class AdminReplyAdmin(admin.ModelAdmin):
-    list_display = ["message", "reply_content", "timestamp"]
+    list_display = ["get_message_name", "reply_content", "timestamp"]
     search_fields = ["message__name", "message__email", "reply_content"]
-    readonly_fields = ["message", "reply_content", "timestamp"]
+
+    def get_message_name(self, obj):
+        return obj.message.name
+
+    get_message_name.short_description = "Message Name"
+
+    readonly_fields = ["get_message_name", "reply_content", "timestamp"]
 
     def save_model(self, request, obj, form, change):
         """
@@ -48,18 +54,15 @@ class AdminReplyAdmin(admin.ModelAdmin):
         """
         super().save_model(request, obj, form, change)
 
-        # Extract the user's email address from the related ContactMessage
-        user_email = obj.message.email
-
         # Compose the email message
         subject = "Your message has been replied"
         message = f"Your message:\n{obj.message.message}\n\nAdmin's reply:\n{obj.reply_content}"
         from_email = settings.EMAIL_HOST_USER
-        recipient_list = [user_email]
-
-        # Send the email
+        recipient_list = [
+            obj.message.email
+        ]  
         try:
             send_mail(subject, message, from_email, recipient_list)
-            print("Email sent successfully.")
+            self.message_user(request, "Email sent successfully.")
         except Exception as e:
-            print("Error sending email:", e)
+            self.message_user(request, f"Error sending email: {e}", level="ERROR")
