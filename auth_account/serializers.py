@@ -1,22 +1,24 @@
 from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from rest_framework import serializers
-from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from .models import CustomUser as User
 from .models import ProfilePicture
-from django.utils.encoding import force_str
-from rest_framework.exceptions import ValidationError
 from .utils import Util
 
-# Email import
+# Email imports
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+"""
+Customized User Model
+"""
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,6 +43,11 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+
+
+"""
+Pending
+"""
 
 
 class EmailVerificationSerializer(serializers.Serializer):
@@ -80,6 +87,11 @@ class ProfilePictureSerializer(serializers.ModelSerializer):
         model = ProfilePicture
         fields = ["custom_user", "image"]
         read_only_fields = ["custom_user"]
+
+
+"""
+We can add bio, address and much much more as we need latter to get more profile data
+"""
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -141,6 +153,11 @@ class CustomPasswordResetSerializer(serializers.Serializer):
         user.set_password(password)
         user.save()
         return attrs
+
+
+"""
+Send Email to Reset Password
+"""
 
 
 class SendPasswordResetEmailSerializer(serializers.Serializer):
@@ -215,6 +232,11 @@ Warm regards,
         return body
 
 
+"""
+Through Email Password Reset
+"""
+
+
 class UserPasswordResetSerializer(serializers.Serializer):
     password = serializers.CharField(
         max_length=255, style={"input_type": "password"}, write_only=True
@@ -245,6 +267,4 @@ class UserPasswordResetSerializer(serializers.Serializer):
             raise serializers.ValidationError("Token is not Valid or Expired")
 
     def create(self, validated_data):
-        # This method needs to be implemented even if it doesn't do anything in this case
-        # Here, you can return an empty dictionary or None
         return {}

@@ -1,18 +1,17 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser as User
 from .models import ProfilePicture
-from rest_framework.permissions import AllowAny
-from rest_framework import viewsets
-from django.utils.http import urlsafe_base64_decode
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
-from django.utils.encoding import force_str
-from django.contrib.auth import authenticate
 from .serializers import (
     UserSerializer,
     UserProfileSerializer,
@@ -22,11 +21,6 @@ from .serializers import (
     UserProfileSerializer,
     ProfilePictureSerializer,
 )
-
-"""
-Generate Token Manually
-"""
-
 
 """
 Generate Token Manually
@@ -109,7 +103,7 @@ class ProfilePictureView(APIView):
 
     def post(self, request, format=None):
         user = request.user
-        image_data = request.data.get("image")  # Safely get the 'image' data
+        image_data = request.data.get("image")
 
         if image_data is None:
             return Response(
@@ -143,7 +137,11 @@ class CustomPasswordResetView(APIView):
         )
 
 
-# Apply on here after it isAuthenticatted
+"""
+Reset Password Email
+"""
+
+
 class SendPasswordResetEmailView(APIView):
     permission_classes = [AllowAny]
 

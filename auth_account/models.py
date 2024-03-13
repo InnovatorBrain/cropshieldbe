@@ -24,6 +24,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
+"""
+This is the User Model
+"""
+
+
 class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -34,13 +39,9 @@ class CustomUser(AbstractUser):
     )
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    # Additional fields for user profile
     bio = models.TextField(blank=True)
     address = models.CharField(max_length=255, blank=True)
-    # Add more profile fields as needed
-
     objects = CustomUserManager()
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",
@@ -52,23 +53,25 @@ class CustomUser(AbstractUser):
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return True
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
     @property
     def is_staff(self):
         "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
         return self.is_admin
 
     @is_staff.setter
     def is_staff(self, value):
         self.is_admin = value
+
+
+"""
+Just Including Profile Picture in Profile-Data 
+"""
 
 
 class ProfilePicture(models.Model):
