@@ -10,18 +10,35 @@ from .models import ProfilePicture
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.utils.http import urlsafe_base64_decode
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from django.utils.encoding import force_str
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer, UserProfileSerializer, ProfilePictureSerializer
+from .serializers import (
+    UserSerializer,
+    UserProfileSerializer,
+    CustomPasswordResetSerializer,
+    SendPasswordResetEmailSerializer,
+    UserPasswordResetSerializer,
+    UserProfileSerializer,
+    ProfilePictureSerializer,
+)
+
 """
 Generate Token Manually
 """
+
+
+"""
+Generate Token Manually
+"""
+
+
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
     return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
     }
 
 
@@ -34,7 +51,8 @@ class UserSignupView(APIView):
             user = serializer.save()
             token = get_tokens_for_user(user)
             return Response(
-                {"token": token, "message": "User created successfully"}, status=status.HTTP_201_CREATED
+                {"token": token, "message": "User created successfully"},
+                status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,7 +66,10 @@ class UserLoginView(APIView):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             token = get_tokens_for_user(user)
-            return Response({"token":token, "message": "Login successful"}, status=status.HTTP_200_OK)
+            return Response(
+                {"token": token, "message": "Login successful"},
+                status=status.HTTP_200_OK,
+            )
         return Response(
             {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -56,9 +77,14 @@ class UserLoginView(APIView):
     def get(self, request):
         # This view will be accessible only to authenticated users
         if request.user.is_authenticated:
-            return Response({"message": "You are authenticated!"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "You are authenticated!"}, status=status.HTTP_200_OK
+            )
         else:
-            return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -77,39 +103,73 @@ class UserProfileView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfilePictureViewSet(viewsets.ModelViewSet):
-    serializer_class = ProfilePictureSerializer
+class ProfilePictureView(APIView):
+    queryset = ProfilePicture.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
-    def get_queryset(self):
-        user_pk = self.kwargs.get("user_pk")
-        return ProfilePicture.objects.filter(custom_user_id=user_pk)
-    
+    def post(self, request, format=None):
+        user = request.user
+        image_data = request.data.get("image")  # Safely get the 'image' data
+
+        if image_data is None:
+            return Response(
+                {"error": "Image data is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        profile_picture_data = {"custom_user": user.id, "image": image_data}
+        serializer = ProfilePictureSerializer(data=profile_picture_data)
+
+        if serializer.is_valid():
+            serializer.validated_data["custom_user_id"] = user.id
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CustomPasswordResetView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, format=None):
-        serializer = CustomPasswordResetSerializer(data = request.data, context={'user':request.user})
+        serializer = CustomPasswordResetSerializer(
+            data=request.data, context={"user": request.user}
+        )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"message":"Password reset successfully"}, status=status.HTTP_200_OK)
-        return Response({"error":"Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
-    
-# Apply on here after it isAuthenticatted 
+            return Response(
+                {"message": "Password reset successfully"}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"error": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+# Apply on here after it isAuthenticatted
 class SendPasswordResetEmailView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
-        serializer = SendPasswordResetEmailSerializer(data=request.data, context={'request': request})
+        serializer = SendPasswordResetEmailSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"message": "Password reset email sent successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Password reset email sent successfully"},
+                status=status.HTTP_200_OK,
+            )
+
 
 class UserPasswordResetView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token, format=None):
-        serializer = UserPasswordResetSerializer(data=request.data, context={'uid': uidb64, 'token': token})
+        serializer = UserPasswordResetSerializer(
+            data=request.data, context={"uid": uidb64, "token": token}
+        )
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Password reset successfully"}, status=status.HTTP_200_OK
+            )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

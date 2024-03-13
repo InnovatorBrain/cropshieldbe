@@ -37,45 +37,10 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
             email=validated_data["email"],
+            username=validated_data["email"],  # Use email as username
             password=validated_data["password"],
         )
         return user
-
-
-class ProfilePictureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProfilePicture
-        fields = ["image"]
-        read_only_fields = ["custom_user"]
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    profile_picture = ProfilePictureSerializer(required=False)
-
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "profile_picture"]
-        read_only_fields = ["email"]
-
-    def update(self, instance, validated_data):
-        instance.first_name = validated_data.get("first_name", instance.first_name)
-        instance.last_name = validated_data.get("last_name", instance.last_name)
-
-        profile_picture_data = validated_data.pop("profile_picture", None)
-        if profile_picture_data:
-            profile_picture = instance.profile_picture
-            if profile_picture:
-                profile_picture.image = profile_picture_data.get(
-                    "image", profile_picture.image
-                )
-                profile_picture.save()
-            else:
-                ProfilePicture.objects.create(
-                    custom_user=instance, **profile_picture_data
-                )
-
-        instance.save()
-        return instance
 
 
 class EmailVerificationSerializer(serializers.Serializer):
@@ -109,11 +74,41 @@ class EmailVerificationSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         self.send_verification_email(user)
 
+
+class ProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfilePicture
+        fields = ["custom_user", "image"]
+        read_only_fields = ["custom_user"]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile_picture = ProfilePictureSerializer(required=False)
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email", "profile_picture"]
+        read_only_fields = ["email"]
+
     def update(self, instance, validated_data):
-        if "password" in validated_data:
-            password = validated_data.pop("password")
-            instance.set_password(password)
-        return super().update(instance, validated_data)
+        instance.first_name = validated_data.get("first_name", instance.first_name)
+        instance.last_name = validated_data.get("last_name", instance.last_name)
+
+        profile_picture_data = validated_data.pop("profile_picture", None)
+        if profile_picture_data:
+            profile_picture = instance.profile_picture
+            if profile_picture:
+                profile_picture.image = profile_picture_data.get(
+                    "image", profile_picture.image
+                )
+                profile_picture.save()
+            else:
+                ProfilePicture.objects.create(
+                    custom_user=instance, **profile_picture_data
+                )
+
+        instance.save()
+        return instance
 
 
 """Password Change Serializer
