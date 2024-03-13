@@ -6,11 +6,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser as User
+from .models import ProfilePicture
 from rest_framework.permissions import AllowAny
+from rest_framework import viewsets
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer
+from .serializers import UserSerializer, UserProfileSerializer, CustomPasswordResetSerializer, SendPasswordResetEmailSerializer, UserPasswordResetSerializer, UserProfileSerializer, ProfilePictureSerializer
 """
 Generate Token Manually
 """
@@ -63,8 +65,24 @@ class UserProfileView(APIView):
 
     def get(self, request, format=None):
         user = request.user
-        serializer = UserProfileSerializer(user)  
+        serializer = UserProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfilePictureViewSet(viewsets.ModelViewSet):
+    serializer_class = ProfilePictureSerializer
+
+    def get_queryset(self):
+        user_pk = self.kwargs.get("user_pk")
+        return ProfilePicture.objects.filter(custom_user_id=user_pk)
     
 class CustomPasswordResetView(APIView):
     permission_classes = [IsAuthenticated]

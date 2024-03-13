@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser
+from .models import CustomUser, ProfilePicture
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Register your models here.
@@ -9,6 +9,8 @@ class UserAdmin(BaseUserAdmin):
     # that reference specific fields on auth.User.
     list_display = ["id", "email", "first_name", "last_name", "is_admin"]
     list_filter = ["is_admin", ]
+    list_editable = ["is_admin",]
+    list_per_page = 10
     fieldsets = [
         ("CropShield User's Credentials", {"fields": ["email", "password"]}),
         ("Personal info", {"fields": ["first_name", "last_name"]}),
@@ -35,3 +37,6 @@ admin.site.register(CustomUser, UserAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 # admin.site.unregister(Group)
+
+
+admin.site.register(ProfilePicture)
