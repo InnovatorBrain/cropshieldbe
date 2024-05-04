@@ -5,9 +5,11 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import PolicyApplication
 from .serializers import PolicyApplicationSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class PolicyApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):
         serializer = PolicyApplicationSerializer(data=request.data)
