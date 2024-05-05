@@ -54,9 +54,9 @@ class PolicyApplication(models.Model):
 
     # Insurance Details
     POLICY_CHOICES = [
-        ("policy1", "Ins Crop"),
-        ("policy2", "New ven"),
-        ("policy3", "Smart Policy"),
+        ("Ins_Crop", "Ins Crop"),
+        ("New_ven", "New ven"),
+        ("Smart_Policy", "Smart Policy"),
     ]
     selectPolicy = models.CharField(
         max_length=255, choices=POLICY_CHOICES, null=True, blank=True
