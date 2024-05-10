@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import PolicyApplication
+from .models import PolicyPremiumDeductible
 
 @admin.register(PolicyApplication)
 class PolicyApplicationAdmin(admin.ModelAdmin):
@@ -25,7 +26,22 @@ class PolicyApplicationAdmin(admin.ModelAdmin):
                                 'address', 'passportPicture1', 'cnicPicture1', 'cnicPicture2', 
                                 'domicilePicture', 'farmAddress', 'cropsInsured', 'otherCrop', 
                                 'acreagePlanted', 'cropVariety', 'plantingDate', 'selectPolicy', 
-                                'coverageAmount', 'startDate', 'endDate', 'riskFactor', 
+                                'coverageAmount', 'startDate', 'riskFactor', 
                                 'additionalComments', 'paymentMethod', 'cardNumber', 
                                 'cardHolderName', 'expiryDate', 'cvc')
+        return readonly_fields
+
+
+@admin.register(PolicyPremiumDeductible)
+class PolicyPremiumDeductibleAdmin(admin.ModelAdmin):
+    list_display = ["selectPolicy", "premium", "deductible"]  # Display selectPolicy, premium, and deductible in the admin list view
+    search_fields = ["selectPolicy"]  # Enable searching by selectPolicy field
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Make selectPolicy readonly as it should not be changed.
+        """
+        readonly_fields = super().get_readonly_fields(request, obj=obj)
+        if obj:
+            readonly_fields += ('selectPolicy',)
         return readonly_fields

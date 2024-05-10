@@ -61,11 +61,13 @@ class PolicyApplication(models.Model):
     selectPolicy = models.CharField(
         max_length=255, choices=POLICY_CHOICES, null=True, blank=True
     )
+    premium_deductible = models.ForeignKey(
+        "PolicyPremiumDeductible", on_delete=models.CASCADE, null=True, blank=True
+    )
     coverageAmount = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     startDate = models.CharField(max_length=15, null=True, blank=True)
-    endDate = models.CharField(max_length=15, null=True, blank=True)
 
     RISK_FACTOR_CHOICES = [
         ("Floods", "Floods"),
@@ -100,3 +102,17 @@ class PolicyApplication(models.Model):
         ("DENIED", "Denied"),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING")
+
+
+class PolicyPremiumDeductible(models.Model):
+    POLICY_CHOICES = [
+        ("Ins_Crop", "Ins Crop"),
+        ("New_ven", "New ven"),
+        ("Smart_Policy", "Smart Policy"),
+    ]
+    selectPolicy = models.CharField(max_length=255, choices=POLICY_CHOICES, unique=True)
+    premium = models.DecimalField(max_digits=10, decimal_places=2)
+    deductible = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.selectPolicy
