@@ -28,7 +28,7 @@ class PolicyApplicationAdmin(admin.ModelAdmin):
                                 'acreagePlanted', 'cropVariety', 'plantingDate', 'selectPolicy', 
                                 'coverageAmount', 'startDate', 'riskFactor', 
                                 'additionalComments', 'paymentMethod', 'cardNumber', 
-                                'cardHolderName', 'expiryDate', 'cvc')
+                                'cardHolderName', 'expiryDate', 'cvc', 'status')
         return readonly_fields
 
 

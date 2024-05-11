@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import PolicyApplication
 from .serializers import PolicyApplicationSerializer
+from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import PolicyPremiumDeductible
@@ -20,7 +21,7 @@ class PolicyApplicationCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PolicyApplicationDetail(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     queryset = PolicyApplication.objects.all()
     serializer_class = PolicyApplicationSerializer
 
@@ -60,3 +61,10 @@ class PolicyPremiumDeductibleUser(APIView):
             return Response({"premium": policy_values.premium, "deductible": policy_values.deductible}, status=status.HTTP_200_OK)
         except PolicyPremiumDeductible.DoesNotExist:
             return Response({"error": "Policy type not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+# Manage Policy
+class ManagePolicyApplicationsAPIView(generics.ListAPIView):
+    queryset = PolicyApplication.objects.all()
+    serializer_class = PolicyApplicationSerializer

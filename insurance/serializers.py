@@ -8,4 +8,4 @@ class PolicyApplicationSerializer(serializers.ModelSerializer):
                   'email', 'address', 'passportPicture1', 'cnicPicture1', 'cnicPicture2', 'domicilePicture',
                   'farmAddress', 'cropsInsured', 'otherCrop', 'acreagePlanted', 'cropVariety', 'plantingDate',
                   'selectPolicy', 'coverageAmount', 'startDate', 'riskFactor', 'additionalComments',
-                  'paymentMethod', 'cardNumber', 'cardHolderName', 'expiryDate', 'cvc']
+                  'paymentMethod', 'cardNumber', 'cardHolderName', 'expiryDate', 'cvc', 'status']
