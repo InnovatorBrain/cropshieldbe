@@ -2,19 +2,21 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .models import PolicyApplication
+from .models import PolicyApplication, PolicyPremiumDeductible
 from .serializers import PolicyApplicationSerializer
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import PolicyPremiumDeductible
 
 class PolicyApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):
-        serializer = PolicyApplicationSerializer(data=request.data)
+        # Merge the request data with the authenticated user
+        data = request.data.copy()
+        data['user'] = request.user  # Assign the authenticated user's id to the 'user' field
+
+        serializer = PolicyApplicationSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -22,8 +24,13 @@ class PolicyApplicationCreate(APIView):
 
 class PolicyApplicationDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = PolicyApplication.objects.all()
     serializer_class = PolicyApplicationSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return PolicyApplication.objects.filter(user=self.request.user)
+        else:
+            return PolicyApplication.objects.none()
 
 
 
@@ -63,8 +70,14 @@ class PolicyPremiumDeductibleUser(APIView):
             return Response({"error": "Policy type not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
-
 # Manage Policy
 class ManagePolicyApplicationsAPIView(generics.ListAPIView):
-    queryset = PolicyApplication.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = PolicyApplicationSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return PolicyApplication.objects.filter(user=self.request.user)
+        else:
+            # If the user is not authenticated, return an empty queryset
+            return PolicyApplication.objects.none()

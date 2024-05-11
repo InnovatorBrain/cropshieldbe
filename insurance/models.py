@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.db import models
 
 
 class PolicyApplication(models.Model):
     # Personal Information
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="policy_applications", null=True)
     farmerName = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     dateOfBirth = models.CharField(max_length=15, null=True, blank=True)
@@ -93,8 +95,10 @@ class PolicyApplication(models.Model):
     expiryDate = models.CharField(max_length=7, null=True, blank=True)
     cvc = models.CharField(max_length=3, null=True, blank=True)
 
+    # def __str__(self):
+    #     return self.farmerName
     def __str__(self):
-        return self.farmerName
+        return f"{self.user.username}'s Policy Application"
 
     STATUS_CHOICES = [
         ("PENDING", "Pending"),
