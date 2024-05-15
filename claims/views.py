@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import ClaimApplication
 from .serializers import ClaimApplicationSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework import generics
 
 class ClaimApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
@@ -22,3 +23,22 @@ class ClaimApplicationDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminUser]
     queryset = ClaimApplication.objects.all()
     serializer_class = ClaimApplicationSerializer
+    
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return ClaimApplication.objects.filter(user=self.request.user)
+        else:
+            return ClaimApplication.objects.none()
+
+
+# Manage Claims Applications
+class ManageClaimApplicationsAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ClaimApplicationSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return ClaimApplication.objects.filter(user=self.request.user)
+        else:
+            return ClaimApplication.objects.none()
+    
