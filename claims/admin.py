@@ -3,7 +3,7 @@ from .models import ClaimApplication
 
 @admin.register(ClaimApplication)
 class PolicyApplicationAdmin(admin.ModelAdmin):
-    list_display = ["farmerName", "createdAt", "email", "typeOfDamage", "dateOfDamage", "status"]
+    list_display = ["farmerName","selectPolicy", "createdAt", "email", "dateOfDamage", "status"]
     list_filter = ["status"]
     search_fields = ["farmerName", "email", "typeOfDamage", "dateOfDamage"]
 

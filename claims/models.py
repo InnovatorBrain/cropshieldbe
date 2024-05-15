@@ -1,8 +1,12 @@
+# claims/models.py
 from django.db import models
-
+from django.conf import settings
+from insurance.models import PolicyApplication  # Import the PolicyApplication model from your insurance app
 
 class ClaimApplication(models.Model):
     # Claim Application
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="claim_applications", null=True)
+    selectPolicy = models.ForeignKey(PolicyApplication, on_delete=models.CASCADE, related_name="claim_applications", null=True, blank=True)
     TYPE_OF_DAMAGE_CHOICES = [
         ('weather_related', 'Weather-related'),
         ('pest_related', 'Pest-related'),
@@ -38,16 +42,6 @@ class ClaimApplication(models.Model):
 
     # Contact Details
     farmerName = models.CharField(max_length=50, null=True, blank=True)
-    COUNTRY_CODE_CHOICES = [
-        ('+1', '+1 (USA)'),
-        ('+44', '+44 (UK)'),
-        ('+92', '+92 (Pakistan)'),
-        ('+970', '+970 (Palestine)'),
-        ('+20', '+20 (Egypt)'),
-        ('+962', '+962 (Jordan)'),
-        ('+971', '+971 (UAE)')
-    ]
-
     countryCode = models.CharField(max_length=5, choices=COUNTRY_CODE_CHOICES)
     phoneNumber = models.CharField(max_length=20)
     email = models.EmailField(null=True, blank=True)
@@ -64,4 +58,3 @@ class ClaimApplication(models.Model):
         ("DENIED", "Denied"),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING")
-
