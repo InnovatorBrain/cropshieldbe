@@ -2,17 +2,18 @@ from django.contrib import admin
 from .models import ClaimApplication
 
 @admin.register(ClaimApplication)
-class PolicyApplicationAdmin(admin.ModelAdmin):
-    list_display = ["farmerName","selectPolicy", "createdAt", "email", "dateOfDamage", "status"]
+class ClaimApplicationAdmin(admin.ModelAdmin):
+    list_display = ["farmerName", "selectPolicy", "user", "createdAt", "email", "dateOfDamage", "status"]
     list_filter = ["status"]
-    search_fields = ["farmerName", "email", "typeOfDamage", "dateOfDamage"]
+    search_fields = ["farmerName", "email", "typeOfDamage", "dateOfDamage", "user__username"]
 
     def get_search_results(self, request, queryset, search_term):
         """
-        Override the default search behavior to search both farmerName and emailAddress fields.
+        Override the default search behavior to search both farmerName, emailAddress, and username fields.
         """
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         queryset |= self.model.objects.filter(email__icontains=search_term)
+        queryset |= self.model.objects.filter(user__username__icontains=search_term)
         return queryset, use_distinct
 
     def get_readonly_fields(self, request, obj=None):
@@ -21,8 +22,8 @@ class PolicyApplicationAdmin(admin.ModelAdmin):
         """
         readonly_fields = super().get_readonly_fields(request, obj=obj)
         if obj and obj.status == 'APPROVED':
-            readonly_fields += ('farmerName', 'countryCode', 'phoneNumber','email', 'createdAt', 
+            readonly_fields += ('farmerName', 'countryCode', 'phoneNumber', 'email', 'createdAt', 
                                 'typeOfDamage', 'dateOfDamage', 'extentOfDamage', 'witnessName', 
                                 'witnessCNIC', 'countryCode', 'witnessPhoneNumber', 'damageDescription', 
-                                'claimPicture1', 'claimPicture2', 'claimPicture3', 'claimPicture4')
+                                'claimPicture1', 'claimPicture2', 'claimPicture3', 'claimPicture4', 'user')
         return readonly_fields

@@ -6,7 +6,15 @@ from insurance.models import PolicyApplication  # Import the PolicyApplication m
 class ClaimApplication(models.Model):
     # Claim Application
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="claim_applications", null=True)
-    selectPolicy = models.ForeignKey(PolicyApplication, on_delete=models.CASCADE, related_name="claim_applications", null=True, blank=True)
+    # selectPolicy = models.ForeignKey(PolicyApplication, on_delete=models.CASCADE, related_name="claim_applications", null=True, blank=True)
+    POLICY_CHOICES = [
+        ("Ins_Crop", "Ins Crop"),
+        ("New_ven", "New ven"),
+        ("Smart_Policy", "Smart Policy"),
+    ]
+    selectPolicy = models.CharField(
+        max_length=255, choices=POLICY_CHOICES, null=True, blank=True
+    )
     TYPE_OF_DAMAGE_CHOICES = [
         ('weather_related', 'Weather-related'),
         ('pest_related', 'Pest-related'),

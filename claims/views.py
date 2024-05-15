@@ -5,13 +5,14 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import ClaimApplication
 from .serializers import ClaimApplicationSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from rest_framework.parsers import MultiPartParser, FormParser
 
 class ClaimApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        serializer = ClaimApplicationSerializer(data=request.data)
+        data = request.data.copy()
+        data['user'] = request.user.id 
+        serializer = ClaimApplicationSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
