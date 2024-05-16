@@ -35,7 +35,13 @@ def get_tokens_for_user(user):
         "access": str(refresh.access_token),
     }
 
+class TokenValidationView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
+    
+    
 class UserSignupView(APIView):
     permission_classes = [AllowAny]
 
