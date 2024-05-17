@@ -31,20 +31,31 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        data['user'] = request.user.id
+        user = request.user
+        data['user'] = user.id
+
+        # Delete existing payment methods for the user
+        PaymentMethod.objects.filter(user=user).delete()
+
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, *args, **kwargs):
+        data = request.data.copy()
+        user = request.user
+        data['user'] = user.id
+
+        # Delete existing payment methods for the user
+        PaymentMethod.objects.filter(user=user).delete()
+
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        data = request.data.copy()
-        data['user'] = request.user.id
         serializer = self.get_serializer(instance, data=data, partial=partial)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

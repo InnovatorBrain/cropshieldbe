@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-
 class PolicyApplication(models.Model):
     # Personal Information
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="policy_applications", null=True)
@@ -99,6 +98,12 @@ class PolicyApplication(models.Model):
     #     return self.farmerName
     def __str__(self):
         return f"{self.user.username}'s Policy Application"
+    
+    # def count_payments(self, user):
+    #     return self.payments.filter(user=user).count()
+    
+    def count_payments(self):
+        return self.payments.count()
 
     STATUS_CHOICES = [
         ("PENDING", "Pending"),

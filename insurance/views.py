@@ -7,6 +7,7 @@ from .serializers import PolicyApplicationSerializer
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.http import JsonResponse
 
 class PolicyApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
@@ -81,3 +82,24 @@ class ManagePolicyApplicationsAPIView(generics.ListAPIView):
         else:
             # If the user is not authenticated, return an empty queryset
             return PolicyApplication.objects.none()
+        
+
+class PolicyPaymentCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, policy_id):
+        user = request.user
+        try:
+            policy_application = PolicyApplication.objects.get(id=policy_id, user=user)
+            payment_count = policy_application.payments.count()
+            return Response({'paymentMade': payment_count}, status=status.HTTP_200_OK)
+        except PolicyApplication.DoesNotExist:
+            return Response({'error': 'Policy application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+def payment_count(request, policy_id):
+    try:
+        policy_application = PolicyApplication.objects.get(id=policy_id)
+        payment_count = policy_application.count_payments()
+        return JsonResponse({'payment_count': payment_count})
+    except PolicyApplication.DoesNotExist:
+        return JsonResponse({'error': 'PolicyApplication not found'}, status=404)
