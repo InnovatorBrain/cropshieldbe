@@ -32,6 +32,7 @@ urlpatterns = [
     path("contactmessage/", include("contactmessage.urls")),
     path("insurance/", include("insurance.urls")),
     path("claims/", include("claims.urls")),
+    path('payment/', include('payment.urls')),
 ]
 
 if settings.DEBUG:
