@@ -6,6 +6,18 @@ class ClaimApplicationAdmin(admin.ModelAdmin):
     list_display = ["farmerName", "selectPolicy", "user", "createdAt", "email", "dateOfDamage", "status"]
     list_filter = ["status"]
     search_fields = ["farmerName", "email", "typeOfDamage", "dateOfDamage", "user__username"]
+    list_per_page = 10
+    list_editable = ["status"]
+    actions = ["clear_status"]
+    filter_horizontal = []
+
+    
+    @admin.action(description="Clear Claims Status")
+    def clear_status(self, request, queryset):
+        updated_count = queryset.update(status="PENDING")
+        self.message_user(
+            request, f"{updated_count} policy applications were successfully updated."
+        )
 
     def get_search_results(self, request, queryset, search_term):
         """

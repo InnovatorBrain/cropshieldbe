@@ -2,17 +2,37 @@ from django.contrib import admin
 from .models import PolicyApplication
 from .models import PolicyPremiumDeductible
 
+
 @admin.register(PolicyApplication)
 class PolicyApplicationAdmin(admin.ModelAdmin):
-    list_display = ["farmerName", "createdAt", "cnic", "status"]  # Include "status" in the list_display
+    list_display = [
+        "farmerName",
+        "createdAt",
+        "cnic",
+        "status",
+    ] 
     list_filter = ["status"]
-    search_fields = ["farmerName", "email"]
+    search_fields = ["farmerName", "email", "status"]
+    list_per_page = 10
+    list_editable = ["status"]
+    actions = ["clear_status"]
+    ordering = ["id", "farmerName", "createdAt", "cnic", "status"]
+    filter_horizontal = []
+
+    @admin.action(description="Clear Status")
+    def clear_status(self, request, queryset):
+        updated_count = queryset.update(status="PENDING")
+        self.message_user(
+            request, f"{updated_count} policy applications were successfully updated."
+        )
 
     def get_search_results(self, request, queryset, search_term):
         """
         Override the default search behavior to search both farmerName and emailAddress fields.
         """
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        queryset, use_distinct = super().get_search_results(
+            request, queryset, search_term
+        )
         queryset |= self.model.objects.filter(email__icontains=search_term)
         return queryset, use_distinct
 
@@ -21,21 +41,47 @@ class PolicyApplicationAdmin(admin.ModelAdmin):
         Make certain fields readonly based on the status of the policy application.
         """
         readonly_fields = super().get_readonly_fields(request, obj=obj)
-        if obj and obj.status == 'APPROVED':
-            readonly_fields += ('farmerName', 'cnic', 'countryCode', 'phoneNumber', 'email', 
-                                'address', 'passportPicture1', 'cnicPicture1', 'cnicPicture2', 
-                                'domicilePicture', 'farmAddress', 'cropsInsured', 'otherCrop', 
-                                'acreagePlanted', 'cropVariety', 'plantingDate', 'selectPolicy', 
-                                'coverageAmount', 'startDate', 'riskFactor', 
-                                'additionalComments', 'paymentMethod', 'cardNumber', 
-                                'cardHolderName', 'expiryDate', 'cvc', 'status')
+        if obj and obj.status == "APPROVED":
+            readonly_fields += (
+                "farmerName",
+                "cnic",
+                "countryCode",
+                "phoneNumber",
+                "email",
+                "address",
+                "passportPicture1",
+                "cnicPicture1",
+                "cnicPicture2",
+                "domicilePicture",
+                "farmAddress",
+                "cropsInsured",
+                "otherCrop",
+                "acreagePlanted",
+                "cropVariety",
+                "plantingDate",
+                "selectPolicy",
+                "coverageAmount",
+                "startDate",
+                "riskFactor",
+                "additionalComments",
+                "paymentMethod",
+                "cardNumber",
+                "cardHolderName",
+                "expiryDate",
+                "cvc",
+                "status",
+            )
         return readonly_fields
 
 
 @admin.register(PolicyPremiumDeductible)
 class PolicyPremiumDeductibleAdmin(admin.ModelAdmin):
-    list_display = ["selectPolicy", "premium", "deductible"]  # Display selectPolicy, premium, and deductible in the admin list view
-    search_fields = ["selectPolicy"]  # Enable searching by selectPolicy field
+    list_display = [
+        "selectPolicy",
+        "premium",
+        "deductible",
+    ]  
+    search_fields = ["selectPolicy"]  
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -43,5 +89,5 @@ class PolicyPremiumDeductibleAdmin(admin.ModelAdmin):
         """
         readonly_fields = super().get_readonly_fields(request, obj=obj)
         if obj:
-            readonly_fields += ('selectPolicy',)
+            readonly_fields += ("selectPolicy",)
         return readonly_fields
