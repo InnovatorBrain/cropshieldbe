@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser as User
+from django.contrib.auth import logout
 from .models import ProfilePicture
 from .serializers import (
     UserSerializer,
@@ -85,7 +86,14 @@ class UserLoginView(APIView):
                 {"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED
             )
 
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]  
 
+    def post(self, request):
+        logout(request)
+        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+    
+   
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
