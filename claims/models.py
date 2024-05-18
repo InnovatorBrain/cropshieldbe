@@ -8,9 +8,11 @@ class ClaimApplication(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="claim_applications", null=True)
     # selectPolicy = models.ForeignKey(PolicyApplication, on_delete=models.CASCADE, related_name="claim_applications", null=True, blank=True)
     POLICY_CHOICES = [
-        ("Ins_Crop", "Ins Crop"),
-        ("New_ven", "New ven"),
-        ("Smart_Policy", "Smart Policy"),
+        ("HarvestGuard_Assurance", "HarvestGuard Assurance"),
+        ("CropShield_Secure", "CropShield Secure"),
+        ("AgriGuard_Plus", "AgriGuard Plus"),
+        ("FarmShield_Complete", "FarmShield Complete"),
+        ("CropSafe_Prime", "CropSafe Prime"),
     ]
     selectPolicy = models.CharField(
         max_length=255, choices=POLICY_CHOICES, null=True, blank=True

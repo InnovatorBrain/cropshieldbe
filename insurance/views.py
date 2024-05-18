@@ -80,7 +80,6 @@ class ManagePolicyApplicationsAPIView(generics.ListAPIView):
         if self.request.user.is_authenticated:
             return PolicyApplication.objects.filter(user=self.request.user)
         else:
-            # If the user is not authenticated, return an empty queryset
             return PolicyApplication.objects.none()
         
 

@@ -55,9 +55,11 @@ class PolicyApplication(models.Model):
 
     # Insurance Details
     POLICY_CHOICES = [
-        ("Ins_Crop", "Ins Crop"),
-        ("New_ven", "New ven"),
-        ("Smart_Policy", "Smart Policy"),
+        ("HarvestGuard_Assurance", "HarvestGuard Assurance"),
+        ("CropShield_Secure", "CropShield Secure"),
+        ("AgriGuard_Plus", "AgriGuard Plus"),
+        ("FarmShield_Complete", "FarmShield Complete"),
+        ("CropSafe_Prime", "CropSafe Prime"),
     ]
     selectPolicy = models.CharField(
         max_length=255, choices=POLICY_CHOICES, null=True, blank=True
@@ -115,9 +117,11 @@ class PolicyApplication(models.Model):
 
 class PolicyPremiumDeductible(models.Model):
     POLICY_CHOICES = [
-        ("Ins_Crop", "Ins Crop"),
-        ("New_ven", "New ven"),
-        ("Smart_Policy", "Smart Policy"),
+        ("HarvestGuard_Assurance", "HarvestGuard Assurance"),
+        ("CropShield_Secure", "CropShield Secure"),
+        ("AgriGuard_Plus", "AgriGuard Plus"),
+        ("FarmShield_Complete", "FarmShield Complete"),
+        ("CropSafe_Prime", "CropSafe Prime"),
     ]
     selectPolicy = models.CharField(max_length=255, choices=POLICY_CHOICES, unique=True)
     premium = models.DecimalField(max_digits=10, decimal_places=2)
