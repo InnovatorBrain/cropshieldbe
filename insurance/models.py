@@ -1,9 +1,15 @@
 from django.conf import settings
 from django.db import models
 
+
 class PolicyApplication(models.Model):
     # Personal Information
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="policy_applications", null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="policy_applications",
+        null=True,
+    )
     farmerName = models.CharField(max_length=255)
     createdAt = models.DateTimeField(auto_now_add=True)
     dateOfBirth = models.CharField(max_length=15, null=True, blank=True)
@@ -64,6 +70,7 @@ class PolicyApplication(models.Model):
     selectPolicy = models.CharField(
         max_length=255, choices=POLICY_CHOICES, null=True, blank=True
     )
+    stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
     premium_deductible = models.ForeignKey(
         "PolicyPremiumDeductible", on_delete=models.CASCADE, null=True, blank=True
     )
@@ -100,10 +107,10 @@ class PolicyApplication(models.Model):
     #     return self.farmerName
     def __str__(self):
         return f"{self.user.username}'s Policy Application"
-    
+
     # def count_payments(self, user):
     #     return self.payments.filter(user=user).count()
-    
+
     def count_payments(self):
         return self.payments.count()
 

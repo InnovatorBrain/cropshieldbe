@@ -19,7 +19,7 @@ class PaymentAdmin(UserFilteredAdmin):
 
 @admin.register(PaymentMethod)
 class PaymentMethodAdmin(UserFilteredAdmin):
-    list_display = ('id', 'user', 'method_type', 'card_holder_name', 'expiry_date')
+    list_display = ('id', 'user', 'method_type', 'card_holder_name', 'expiry_month', 'expiry_year')
     search_fields = ('user__username', 'card_holder_name', 'method_type')
     list_filter = ('method_type',)
     ordering = ('user',)

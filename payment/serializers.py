@@ -1,5 +1,7 @@
+# serializers.py
 from rest_framework import serializers
 from .models import Payment, PaymentMethod
+from insurance.models import PolicyApplication
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,7 +11,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 class PaymentMethodSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentMethod
-        fields = ['id', 'user', 'method_type', 'card_number', 'card_holder_name', 'expiry_date', 'cvc', 'is_default']
+        fields = ['id', 'user', 'method_type', 'card_number', 'card_holder_name', 'expiry_month', 'expiry_year', 'cvc', 'is_default']
 
     def create(self, validated_data):
         if validated_data.get('is_default'):
@@ -20,3 +22,12 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         if validated_data.get('is_default'):
             PaymentMethod.objects.filter(user=instance.user, is_default=True).update(is_default=False)
         return super().update(instance, validated_data)
+
+class CreatePaymentIntentSerializer(serializers.Serializer):
+    policy_application_id = serializers.IntegerField()
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    def validate_policy_application_id(self, value):
+        if not PolicyApplication.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Invalid policy application ID")
+        return value

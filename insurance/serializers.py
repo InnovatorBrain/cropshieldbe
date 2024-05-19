@@ -20,3 +20,4 @@ class PolicyApplicationSerializer(serializers.ModelSerializer):
         if instance.user != user:
             raise serializers.ValidationError("You don't have permission to modify this instance.")
         return super().update(instance, validated_data)
+

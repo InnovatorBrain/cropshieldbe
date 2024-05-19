@@ -1,3 +1,4 @@
+# models.py
 from django.db import models
 from django.conf import settings
 from insurance.models import PolicyApplication
@@ -19,7 +20,8 @@ class PaymentMethod(models.Model):
     method_type = models.CharField(max_length=50)  # e.g., "Credit Card", "Debit Card"
     card_number = models.CharField(max_length=19)
     card_holder_name = models.CharField(max_length=50)
-    expiry_date = models.CharField(max_length=7)
+    expiry_month = models.CharField(max_length=2)
+    expiry_year = models.CharField(max_length=4)
     cvc = models.CharField(max_length=3)
     is_default = models.BooleanField(default=False)
 

@@ -8,6 +8,9 @@ from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import JsonResponse
+import stripe
+from django.conf import settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class PolicyApplicationCreate(APIView):
     permission_classes = [IsAuthenticated]
@@ -102,3 +105,5 @@ def payment_count(request, policy_id):
         return JsonResponse({'payment_count': payment_count})
     except PolicyApplication.DoesNotExist:
         return JsonResponse({'error': 'PolicyApplication not found'}, status=404)
+    
+
