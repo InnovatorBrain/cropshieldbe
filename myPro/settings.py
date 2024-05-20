@@ -13,23 +13,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from datetime import timedelta
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = "6!@2wu61+2k9cn4*g2=%^&rpc+mb8uw_xq&@o2!q#nylxbr3u1"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
-# Application definition
 
 
 INSTALLED_APPS = [
@@ -108,8 +103,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "myPro.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -119,8 +112,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -138,8 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
@@ -152,8 +141,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -168,7 +155,7 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 USE_TZ = True
 # SMTP server settings
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587  # 465
+EMAIL_PORT = 587  
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER_IS")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD_ISS")
 # DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM")
@@ -186,8 +173,9 @@ SIMPLE_JWT = {
 }
 
 
-
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEYY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEYY")
+
+
 
 

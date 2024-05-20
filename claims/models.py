@@ -1,7 +1,7 @@
 # claims/models.py
 from django.db import models
 from django.conf import settings
-from insurance.models import PolicyApplication  # Import the PolicyApplication model from your insurance app
+from insurance.models import PolicyApplication  
 
 class ClaimApplication(models.Model):
     # Claim Application

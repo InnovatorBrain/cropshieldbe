@@ -1,4 +1,3 @@
-# views.py
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -46,7 +45,6 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
-            # Ensure only one default payment method per user
             if serializer.validated_data.get("is_default"):
                 PaymentMethod.objects.filter(user=user, is_default=True).update(
                     is_default=False
@@ -64,7 +62,6 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=partial)
         if serializer.is_valid():
-            # Ensure only one default payment method per user
             if serializer.validated_data.get("is_default"):
                 PaymentMethod.objects.filter(user=user, is_default=True).update(
                     is_default=False
@@ -86,7 +83,7 @@ class CreatePaymentIntentView(APIView):
             amount = serializer.validated_data["amount"]
 
             intent = stripe.PaymentIntent.create(
-                amount=int(amount * 100),  # Stripe expects the amount in cents
+                amount=int(amount * 100),  
                 currency="usd",
                 metadata={"policy_application_id": policy_application.id},
             )

@@ -76,7 +76,6 @@ class UserLoginView(APIView):
         )
 
     def get(self, request):
-        # This view will be accessible only to authenticated users
         if request.user.is_authenticated:
             return Response(
                 {"message": "You are authenticated!"}, status=status.HTTP_200_OK

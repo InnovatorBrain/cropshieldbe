@@ -12,7 +12,7 @@ urlpatterns = [
     path('reset-password-Email/<str:uidb64>/<str:token>/', UserPasswordResetView.as_view(), name='password_reset_confirm'),
     path('profile-picture/', ProfilePictureView.as_view(), name='profile_picture'),
     path('validate-token/', TokenValidationView.as_view(), name='validate_token'),
-    path('logout/', LogoutView.as_view(), name='logout'),  # Add logout endpoint
+    path('logout/', LogoutView.as_view(), name='logout'),  
 
 ]
 
