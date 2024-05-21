@@ -7,6 +7,7 @@ from django.utils.html import format_html
 @admin.register(PolicyApplication)
 class PolicyApplicationAdmin(admin.ModelAdmin):
     list_display = [
+        "display_id",
         "farmerName",
         "createdAt",
         "cnic",
@@ -88,6 +89,7 @@ class PolicyApplicationAdmin(admin.ModelAdmin):
         readonly_fields = super().get_readonly_fields(request, obj=obj)
         if obj and obj.status == "APPROVED":
             readonly_fields += (
+                "display_id",
                 "farmerName",
                 "cnic",
                 "countryCode",

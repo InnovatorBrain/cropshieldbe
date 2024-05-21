@@ -2,9 +2,15 @@
 from django.db import models
 from django.conf import settings
 from insurance.models import PolicyApplication  
+import uuid
+
+def generate_uuid():
+    return uuid.uuid4()
 
 class ClaimApplication(models.Model):
     # Claim Application
+    display_claim_id = models.UUIDField(default=generate_uuid, editable=False, unique=True)
+    selectedPolicy = models.CharField(max_length=255, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="claim_applications", null=True)
     # selectPolicy = models.ForeignKey(PolicyApplication, on_delete=models.CASCADE, related_name="claim_applications", null=True, blank=True)
     POLICY_CHOICES = [

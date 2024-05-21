@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PolicyApplicationCreate, PolicyApplicationDetail, PolicyPremiumDeductibleAdmin, PolicyPremiumDeductibleUser, ManagePolicyApplicationsAPIView, PolicyPaymentCountView
+from .views import PolicyApplicationCreate, PolicyApplicationDetail, PolicyPremiumDeductibleAdmin, PolicyPremiumDeductibleUser, ManagePolicyApplicationsAPIView, PolicyPaymentCountView, UserPoliciesView
 from . import views
 
 urlpatterns = [
@@ -10,5 +10,7 @@ urlpatterns = [
     path('manage-policies/', ManagePolicyApplicationsAPIView.as_view(), name='manage-policies-api'),
     path('policies/<int:policy_id>/payment-count/', PolicyPaymentCountView.as_view(), name='policy-payment-count'),
     path('insurance/policies/&lt;int:policy_id&gt;/payment-count/', views.payment_count, name='payment-count'),
+    path('user-policies/', UserPoliciesView.as_view(), name='user-policies'),
+
 
 ]

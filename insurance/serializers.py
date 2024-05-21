@@ -4,7 +4,7 @@ from .models import PolicyApplication
 class PolicyApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PolicyApplication
-        fields = ['farmerName', 'createdAt', 'dateOfBirth', 'gender', 'cnic', 'countryCode', 'phoneNumber',
+        fields = ['display_id','farmerName', 'createdAt', 'dateOfBirth', 'gender', 'cnic', 'countryCode', 'phoneNumber',
                   'email', 'address', 'passportPicture1', 'cnicPicture1', 'cnicPicture2', 'domicilePicture',
                   'farmAddress', 'cropsInsured', 'otherCrop', 'acreagePlanted', 'cropVariety', 'plantingDate',
                   'selectPolicy', 'coverageAmount', 'startDate', 'riskFactor', 'additionalComments',
@@ -21,3 +21,7 @@ class PolicyApplicationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You don't have permission to modify this instance.")
         return super().update(instance, validated_data)
 
+class UserPolicySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PolicyApplication
+        fields = ['display_id', 'farmerName', 'selectPolicy', 'status']

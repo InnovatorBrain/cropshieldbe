@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import PolicyApplication, PolicyPremiumDeductible
-from .serializers import PolicyApplicationSerializer
+from .serializers import PolicyApplicationSerializer, UserPolicySerializer
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -107,3 +107,12 @@ def payment_count(request, policy_id):
         return JsonResponse({'error': 'PolicyApplication not found'}, status=404)
     
 
+    
+
+class UserPoliciesView(generics.ListAPIView):
+    serializer_class = UserPolicySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return PolicyApplication.objects.filter(user=user)

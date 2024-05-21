@@ -1,8 +1,13 @@
 from django.conf import settings
 from django.db import models
+import uuid
 
+def generate_uuid():
+    return uuid.uuid4()
 
 class PolicyApplication(models.Model):
+    display_id = models.UUIDField(default=generate_uuid, editable=False, unique=True)
+
     # Personal Information
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
