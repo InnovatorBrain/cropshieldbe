@@ -15,12 +15,3 @@ class ClaimApplicationSerializer(serializers.ModelSerializer):
         policies = PolicyApplication.objects.filter(user=user)
         return [{'display_id': policy.display_id, 'selectPolicy': policy.selectPolicy} for policy in policies]
 
-    # def validate(self, data):
-    #     # Retrieve the associated policy from the data
-    #     selectPolicy = data.get('selectPolicy')
-
-    #     # Check if the associated policy is approved
-    #     if selectPolicy and selectPolicy.status != 'APPROVED':
-    #         raise serializers.ValidationError("Cannot submit claim. Policy is either not enrolled or not approved.")
-
-    #     return data

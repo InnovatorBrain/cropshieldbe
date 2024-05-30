@@ -123,6 +123,12 @@ class ProfilePictureView(APIView):
                 {"error": "Image data is required."}, status=status.HTTP_400_BAD_REQUEST
             )
 
+        try:
+            existing_profile_picture = ProfilePicture.objects.get(custom_user=user)
+            existing_profile_picture.delete()
+        except ProfilePicture.DoesNotExist:
+            pass
+        
         profile_picture_data = {"custom_user": user.id, "image": image_data}
         serializer = ProfilePictureSerializer(data=profile_picture_data)
 
